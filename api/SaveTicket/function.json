@@ -1,9 +1,16 @@
 {
-  "name": "itportal-api",
-  "version": "1.0.0",
-  "description": "Azure Functions API for IT Services Portal",
-  "main": "index.js",
-  "dependencies": {
-    "@azure/cosmos": "^4.0.0"
-  }
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": ["post", "options"]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    }
+  ]
 }
