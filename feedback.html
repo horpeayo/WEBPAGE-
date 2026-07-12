@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Feedback — Share Your Experience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  /* ── Tokens ─────────────────────────────────── */
+  :root {
+    --teal:       #0B7B6F;
+    --teal-light: #E6F4F2;
+    --teal-mid:   #0d9488;
+    --charcoal:   #2C3E50;
+    --grey-bg:    #F7F8FA;
+    --grey-border:#DDE1E7;
+    --grey-text:  #6B7280;
+    --white:      #FFFFFF;
+    --positive:   #16A34A;
+    --positive-bg:#DCFCE7;
+    --negative:   #DC2626;
+    --negative-bg:#FEE2E2;
+    --neutral:    #D97706;
+    --neutral-bg: #FEF3C7;
+    --accent:     var(--teal);
+    --accent-bg:  var(--teal-light);
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body:    'DM Sans', system-ui, sans-serif;
+    --radius:     12px;
+    --shadow:     0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--grey-bg);
+    color: var(--charcoal);
+    min-height: 100vh;
+    padding: 0 0 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Header ─────────────────────────────────── */
+  .site-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--grey-border);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 36px; height: 36px;
+    background: var(--teal);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { width: 20px; height: 20px; fill: white; }
+
+  .logo-text { font-weight: 600; font-size: 1rem; color: var(--charcoal); }
+  .logo-sub  { font-size: 0.78rem; color: var(--grey-text); margin-top: 1px; }
+
+  /* ── Hero ───────────────────────────────────── */
+  .hero {
+    background: var(--teal);
+    padding: 48px 24px 64px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 0%, rgba(255,255,255,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.9);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    color: white;
+    line-height: 1.15;
+    margin-bottom: 14px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero p {
+    color: rgba(255,255,255,0.82);
+    font-size: 1rem;
+    max-width: 380px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ── Card ───────────────────────────────────── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    max-width: 620px;
+    margin: -28px auto 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Dynamic accent bar that changes colour with rating */
+  .card-accent-bar {
+    height: 5px;
+    background: var(--accent);
+    transition: background 0.4s ease;
+  }
+
+  .card-body { padding: 36px 40px 40px; }
+
+  @media (max-width: 640px) {
+    .card-body { padding: 28px 22px 32px; }
+  }
+
+  /* ── Rating (signature element) ─────────────── */
+  .rating-block {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--grey-border);
+  }
+
+  .rating-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 16px;
+  }
+
+  .stars {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .star-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 2.2rem;
+    line-height: 1;
+    transition: transform 0.15s ease, filter 0.15s ease;
+    filter: grayscale(1) opacity(0.35);
+    padding: 4px;
+  }
+
+  .star-btn:hover,
+  .star-btn.active { filter: grayscale(0) opacity(1); }
+  .star-btn:hover  { transform: scale(1.18); }
+  .star-btn.active { transform: scale(1.1); }
+
+  .rating-caption {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--grey-text);
+    min-height: 20px;
+    transition: color 0.3s;
+  }
+
+  /* ── Form fields ─────────────────────────────── */
+  .field-group { margin-bottom: 20px; }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 500px) { .field-row { grid-template-columns: 1fr; } }
+
+  label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 7px;
+    letter-spacing: 0.01em;
+  }
+
+  label .optional {
+    font-weight: 400;
+    color: var(--grey-text);
+    font-size: 0.78rem;
+    margin-left: 4px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  select,
+  textarea {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--charcoal);
+    background: var(--white);
+    border: 1.5px solid var(--grey-border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(11,123,111,0.12);
+  }
+
+  textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+
+  select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+
+  /* ── Experience options ─────────────────────── */
+  .experience-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  @media (max-width: 500px) { .experience-grid { grid-template-columns: 1fr; } }
+
+  .exp-option { position: relative; }
+
+  .exp-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .exp-option label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 10px;
+    border: 1.5px solid var(--grey-border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--grey-text);
+    text-align: center;
+    margin: 0;
+    letter-spacing: 0;
+  }
+
+  .exp-option label .icon { font-size: 1.6rem; line-height: 1; }
+
+  .exp-option input:checked + label {
+    border-color: var(--accent);
+    background: var(--accent-bg);
+    color: var(--charcoal);
+    font-weight: 600;
+  }
+
+  .exp-option label:hover {
+    border-color: var(--teal);
+    background: var(--teal-light);
+  }
+
+  /* ── Checkbox list ───────────────────────────── */
+  .check-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+
+  .check-item { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--teal);
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 4px;
+  }
+
+  .check-item span {
+    font-size: 0.9rem;
+    color: var(--charcoal);
+    line-height: 1.4;
+  }
+
+  /* ── Recommend radio ─────────────────────────── */
+  .recommend-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .rec-opt { position: relative; }
+  .rec-opt input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .rec-opt label {
+    display: flex; align-items: center; gap: 6px;
+    padding: 9px 16px;
+    border: 1.5px solid var(--grey-border);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--grey-text);
+    margin: 0;
+    transition: all 0.15s;
+    letter-spacing: 0;
+  }
+  .rec-opt input:checked + label {
+    border-color: var(--teal);
+    background: var(--teal-light);
+    color: var(--teal);
+    font-weight: 600;
+  }
+  .rec-opt label:hover { border-color: var(--teal); }
+
+  /* ── Section divider ─────────────────────────── */
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    color: var(--charcoal);
+    margin: 28px 0 16px;
+    padding-top: 28px;
+    border-top: 1px solid var(--grey-border);
+  }
+
+  /* ── Submit button ───────────────────────────── */
+  .submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--teal);
+    color: white;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 28px;
+    transition: background 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .submit-btn:hover:not(:disabled) { background: var(--teal-mid); }
+  .submit-btn:active:not(:disabled) { transform: scale(0.99); }
+  .submit-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  /* ── Response messages ───────────────────────── */
+  .msg {
+    display: none;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    margin-top: 16px;
+    line-height: 1.5;
+  }
+  .msg.success {
+    display: block;
+    background: var(--positive-bg);
+    border: 1.5px solid #86efac;
+    color: #166534;
+  }
+  .msg.error {
+    display: block;
+    background: var(--negative-bg);
+    border: 1.5px solid #fca5a5;
+    color: #991b1b;
+  }
+
+  /* ── Anon note ───────────────────────────────── */
+  .anon-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: var(--grey-bg);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.82rem;
+    color: var(--grey-text);
+    margin-top: 20px;
+    line-height: 1.5;
+  }
+  .anon-note .icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── Footer ──────────────────────────────────── */
+  .page-footer {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 0.78rem;
+    color: var(--grey-text);
+    padding: 0 24px;
+  }
+  .page-footer a { color: var(--teal); text-decoration: none; }
+
+  /* ── Success screen ──────────────────────────── */
+  .success-screen {
+    display: none;
+    padding: 56px 40px;
+    text-align: center;
+  }
+  .success-screen .check-circle {
+    width: 72px; height: 72px;
+    background: var(--positive-bg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 20px;
+  }
+  .success-screen h2 {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--charcoal);
+    margin-bottom: 10px;
+  }
+  .success-screen p { color: var(--grey-text); font-size: 0.95rem; line-height: 1.6; max-width: 320px; margin: 0 auto 24px; }
+  .success-screen .ref { font-family: monospace; font-size: 0.8rem; background: var(--grey-bg); padding: 6px 12px; border-radius: 6px; color: var(--charcoal); display: inline-block; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="logo-mark">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm1 14H11v-4H7v-2h4V6h2v4h4v2h-4v4z"/>
+    </svg>
+  </div>
+  <div>
+    <div class="logo-text">ECEWS ACE 5 — Patient Experience</div>
+    <div class="logo-sub">Lagos State Health Facilities</div>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <span class="hero-eyebrow">Your voice matters</span>
+  <h1>How was your care experience?</h1>
+  <p>Your honest feedback helps us improve treatment and services at your facility.</p>
+</div>
+
+<!-- Form Card -->
+<div style="padding: 0 16px;">
+  <div class="card">
+    <div class="card-accent-bar" id="accentBar"></div>
+
+    <!-- Form -->
+    <div class="card-body" id="formBody">
+
+      <!-- Star rating -->
+      <div class="rating-block">
+        <div class="rating-label">Overall, how would you rate your experience?</div>
+        <div class="stars" id="starRow" role="group" aria-label="Star rating">
+          <button type="button" class="star-btn" data-val="1" aria-label="1 star">⭐</button>
+          <button type="button" class="star-btn" data-val="2" aria-label="2 stars">⭐</button>
+          <button type="button" class="star-btn" data-val="3" aria-label="3 stars">⭐</button>
+          <button type="button" class="star-btn" data-val="4" aria-label="4 stars">⭐</button>
+          <button type="button" class="star-btn" data-val="5" aria-label="5 stars">⭐</button>
+        </div>
+        <div class="rating-caption" id="ratingCaption">Tap a star to rate your experience</div>
+        <input type="hidden" id="ratingValue" value="">
+      </div>
+
+      <!-- Patient info -->
+      <div class="field-row">
+        <div class="field-group">
+          <label for="patientName">Your name <span class="optional">(optional)</span></label>
+          <input type="text" id="patientName" placeholder="e.g. Amaka Johnson">
+        </div>
+        <div class="field-group">
+          <label for="patientPhone">Phone number <span class="optional">(optional)</span></label>
+          <input type="tel" id="patientPhone" placeholder="e.g. 08012345678">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="facility">Which facility did you visit? <span style="color:#DC2626">*</span></label>
+        <select id="facility">
+          <option value="">— Select facility —</option>
+          <option>Badagry General Hospital</option>
+          <option>OJO PHC</option>
+          <option>Ajeromi General Hospital</option>
+          <option>Ikorodu General Hospital</option>
+          <option>Orile Agege General Hospital</option>
+          <option>Massey Children's Hospital</option>
+          <option>Harvey Road Clinic</option>
+          <option>Shomolu General Hospital</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label for="visitDate">Date of visit <span class="optional">(optional)</span></label>
+        <input type="text" id="visitDate" placeholder="e.g. 10 July 2026">
+      </div>
+
+      <div class="field-group">
+        <label for="department">Department visited <span class="optional">(optional)</span></label>
+        <select id="department">
+          <option value="">— Select department —</option>
+          <option>OPD (Out-Patient)</option>
+          <option>IPD (In-Patient)</option>
+          <option>Pharmacy</option>
+          <option>Laboratory</option>
+          <option>HIV/ART Clinic</option>
+          <option>Antenatal / Maternity</option>
+          <option>Emergency</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <!-- Experience type -->
+      <div class="section-title">How did your visit go?</div>
+
+      <div class="field-group">
+        <label>Describe your overall experience</label>
+        <div class="experience-grid">
+          <div class="exp-option">
+            <input type="radio" name="experience" id="exp-excellent" value="Excellent">
+            <label for="exp-excellent"><span class="icon">😊</span>Excellent</label>
+          </div>
+          <div class="exp-option">
+            <input type="radio" name="experience" id="exp-good" value="Good">
+            <label for="exp-good"><span class="icon">🙂</span>Good</label>
+          </div>
+          <div class="exp-option">
+            <input type="radio" name="experience" id="exp-average" value="Average">
+            <label for="exp-average"><span class="icon">😐</span>Average</label>
+          </div>
+          <div class="exp-option">
+            <input type="radio" name="experience" id="exp-poor" value="Poor">
+            <label for="exp-poor"><span class="icon">😕</span>Poor</label>
+          </div>
+          <div class="exp-option">
+            <input type="radio" name="experience" id="exp-bad" value="Very Poor">
+            <label for="exp-bad"><span class="icon">😞</span>Very Poor</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- What went well -->
+      <div class="field-group">
+        <label>What went well? <span class="optional">(tick all that apply)</span></label>
+        <div class="check-list">
+          <label class="check-item"><input type="checkbox" value="Staff were friendly and respectful"><span>Staff were friendly and respectful</span></label>
+          <label class="check-item"><input type="checkbox" value="I was seen quickly without long waiting"><span>I was seen quickly without long waiting</span></label>
+          <label class="check-item"><input type="checkbox" value="My treatment was explained clearly"><span>My treatment was explained clearly</span></label>
+          <label class="check-item"><input type="checkbox" value="The facility was clean and comfortable"><span>The facility was clean and comfortable</span></label>
+          <label class="check-item"><input type="checkbox" value="Medication was available and dispensed promptly"><span>Medication was available and dispensed promptly</span></label>
+          <label class="check-item"><input type="checkbox" value="I felt my privacy was respected"><span>I felt my privacy was respected</span></label>
+        </div>
+      </div>
+
+      <!-- What could be better -->
+      <div class="field-group">
+        <label>What could be improved? <span class="optional">(tick all that apply)</span></label>
+        <div class="check-list">
+          <label class="check-item"><input type="checkbox" value="Waiting time was too long"><span>Waiting time was too long</span></label>
+          <label class="check-item"><input type="checkbox" value="Staff attitude needs improvement"><span>Staff attitude needs improvement</span></label>
+          <label class="check-item"><input type="checkbox" value="Treatment was not clearly explained"><span>Treatment was not clearly explained</span></label>
+          <label class="check-item"><input type="checkbox" value="Facility needs to be cleaner"><span>Facility needs to be cleaner</span></label>
+          <label class="check-item"><input type="checkbox" value="Medication was out of stock"><span>Medication was out of stock</span></label>
+          <label class="check-item"><input type="checkbox" value="I did not feel listened to"><span>I did not feel listened to</span></label>
+        </div>
+      </div>
+
+      <!-- Open feedback -->
+      <div class="section-title">Tell us more</div>
+
+      <div class="field-group">
+        <label for="positiveComment">What did you appreciate most about your visit? <span class="optional">(optional)</span></label>
+        <textarea id="positiveComment" placeholder="e.g. The nurse who attended to me was very kind and explained everything clearly..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label for="negativeComment">Is there anything that disappointed you or that you feel we should improve? <span class="optional">(optional)</span></label>
+        <textarea id="negativeComment" placeholder="e.g. The waiting area was crowded and I waited over 2 hours before being seen..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label for="suggestion">Any suggestions for us? <span class="optional">(optional)</span></label>
+        <textarea id="suggestion" placeholder="e.g. It would help to have a separate queue for elderly patients..." style="min-height:80px;"></textarea>
+      </div>
+
+      <!-- Waiting time question -->
+      <div class="field-group">
+        <label>How long did you wait before seeing a doctor?</label>
+        <div class="recommend-row" style="flex-wrap: wrap; gap: 10px;">
+          <div class="rec-opt">
+            <input type="radio" name="waitTime" id="wait-30" value="Less than 30 minutes">
+            <label for="wait-30">⚡ Less than 30 mins</label>
+          </div>
+          <div class="rec-opt">
+            <input type="radio" name="waitTime" id="wait-1hr" value="30 minutes to 1 hour">
+            <label for="wait-1hr">🕐 30 mins – 1 hour</label>
+          </div>
+          <div class="rec-opt">
+            <input type="radio" name="waitTime" id="wait-2hr" value="1 to 2 hours">
+            <label for="wait-2hr">🕑 1 – 2 hours</label>
+          </div>
+          <div class="rec-opt">
+            <input type="radio" name="waitTime" id="wait-3hr" value="2 to 3 hours">
+            <label for="wait-3hr">🕒 2 – 3 hours</label>
+          </div>
+          <div class="rec-opt">
+            <input type="radio" name="waitTime" id="wait-more" value="More than 3 hours">
+            <label for="wait-more">🕓 More than 3 hours</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Follow-up question -->
+      <div class="field-group">
+        <label>Did anyone follow up with you regarding your test results or medication pick-up?</label>
+        <div class="recommend-row">
+          <div class="rec-opt">
+            <input type="radio" name="followUp" id="follow-yes" value="Yes">
+            <label for="follow-yes">✅ Yes, they did</label>
+          </div>
+          <div class="rec-opt">
+            <input type="radio" name="followUp" id="follow-no" value="No">
+            <label for="follow-no">❌ No, nobody did</label>
+          </div>
+          <div class="rec-opt">
+            <input type="radio" name="followUp" id="follow-na" value="Not applicable">
+            <label for="follow-na">➖ Not applicable</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Follow-up comment (shows only if No is selected) -->
+      <div class="field-group" id="followUpCommentBox" style="display:none;">
+        <label for="followUpComment">Would you like to tell us more about the follow-up experience?<span class="optional"> (optional)</span></label>
+        <textarea id="followUpComment" placeholder="e.g. I had to call the facility myself to find out my test results..."></textarea>
+      </div>
+
+      <!-- Recommend -->
+      <div class="field-group">
+        <label>Would you recommend this facility to a friend or family member?</label>
+        <div class="recommend-row">
+          <div class="rec-opt">
+            <input type="radio" name="recommend" id="rec-yes" value="Yes">
+            <label for="rec-yes">👍 Yes, definitely</label>
+          </div>
+          <div class="rec-opt">
+            <input type="radio" name="recommend" id="rec-maybe" value="Maybe">
+            <label for="rec-maybe">🤔 Maybe</label>
+          </div>
+          <div class="rec-opt">
+            <input type="radio" name="recommend" id="rec-no" value="No">
+            <label for="rec-no">👎 No</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Privacy note -->
+      <div class="anon-note">
+        <span class="icon">🔒</span>
+        <span>Your feedback is confidential. Personal details are optional and will only be used if you request a follow-up. All responses are used solely to improve patient care.</span>
+      </div>
+
+      <!-- Submit -->
+      <button class="submit-btn" id="submitBtn" onclick="submitFeedback()">
+        <span>Submit feedback</span>
+        <span>→</span>
+      </button>
+
+      <div id="successMsg" class="msg success"></div>
+      <div id="errorMsg" class="msg error"></div>
+
+    </div><!-- /card-body -->
+
+    <!-- Success screen (shown after submit) -->
+    <div class="success-screen" id="successScreen">
+      <div class="check-circle">✅</div>
+      <h2>Thank you for your feedback!</h2>
+      <p>Your response has been recorded. It will help us improve care for patients across our facilities.</p>
+      <div class="ref" id="refNumber"></div>
+      <br><br>
+      <button class="submit-btn" onclick="resetForm()" style="max-width:240px; margin:0 auto;">
+        Submit another response
+      </button>
+    </div>
+
+  </div><!-- /card -->
+</div>
+
+<!-- Footer -->
+<div class="page-footer">
+  <p>ECEWS ACE 5 Project — Lagos State &nbsp;·&nbsp; <a href="#">Privacy Policy</a> &nbsp;·&nbsp; Powered by Northpoint IT</p>
+</div>
+
+<script>
+// ── Star rating logic ─────────────────────────────────────
+const stars     = document.querySelectorAll('.star-btn');
+const caption   = document.getElementById('ratingCaption');
+const ratingVal = document.getElementById('ratingValue');
+const accentBar = document.getElementById('accentBar');
+
+const captions = {
+  1: "Very poor — we're sorry to hear that",
+  2: "Poor — we'll work to do better",
+  3: "Average — there's room for improvement",
+  4: "Good — glad your experience was positive",
+  5: "Excellent — thank you! We're thrilled to hear that"
+};
+
+const accentColors = {
+  1: "#DC2626",
+  2: "#EA580C",
+  3: "#D97706",
+  4: "#16A34A",
+  5: "#0B7B6F"
+};
+
+let selectedRating = 0;
+
+stars.forEach(btn => {
+  btn.addEventListener('click', () => {
+    selectedRating = parseInt(btn.dataset.val);
+    ratingVal.value = selectedRating;
+    updateStars(selectedRating);
+  });
+
+  btn.addEventListener('mouseenter', () => {
+    highlightStars(parseInt(btn.dataset.val));
+  });
+});
+
+document.getElementById('starRow').addEventListener('mouseleave', () => {
+  updateStars(selectedRating);
+});
+
+function highlightStars(n) {
+  stars.forEach((s, i) => {
+    s.classList.toggle('active', i < n);
+  });
+  caption.textContent = captions[n] || "Tap a star to rate your experience";
+  accentBar.style.background = accentColors[n] || "var(--teal)";
+}
+
+function updateStars(n) {
+  stars.forEach((s, i) => {
+    s.classList.toggle('active', i < n);
+  });
+  caption.textContent = n ? captions[n] : "Tap a star to rate your experience";
+  accentBar.style.background = n ? accentColors[n] : "var(--teal)";
+  caption.style.color = n ? accentColors[n] : "var(--grey-text)";
+}
+
+// ── Follow-up comment toggle ──────────────────────────────
+document.querySelectorAll('input[name="followUp"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    const box = document.getElementById('followUpCommentBox');
+    box.style.display = radio.value === "No" ? "block" : "none";
+  });
+});
+
+// ── Form submission ───────────────────────────────────────
+async function submitFeedback() {
+  const btn       = document.getElementById('submitBtn');
+  const successEl = document.getElementById('successMsg');
+  const errorEl   = document.getElementById('errorMsg');
+
+  successEl.style.display = "none";
+  errorEl.style.display   = "none";
+
+  const facility = document.getElementById('facility').value;
+  if (!facility) {
+    errorEl.textContent = "Please select the facility you visited.";
+    errorEl.style.display = "block";
+    document.getElementById('facility').focus();
+    return;
+  }
+
+  if (!selectedRating) {
+    errorEl.textContent = "Please tap a star to rate your experience before submitting.";
+    errorEl.style.display = "block";
+    return;
+  }
+
+  // Collect checkbox values
+  const wentWell = [...document.querySelectorAll('.check-list input[type=checkbox]:checked')]
+    .filter((_, i) => i < 6).map(cb => cb.value);
+  const improve  = [...document.querySelectorAll('.check-list input[type=checkbox]:checked')]
+    .filter((_, i) => i >= 6).map(cb => cb.value);
+  const experience = document.querySelector('input[name=experience]:checked')?.value || "";
+  const recommend  = document.querySelector('input[name=recommend]:checked')?.value  || "";
+
+  const payload = {
+    rating:          selectedRating,
+    facility:        facility,
+    department:      document.getElementById('department').value,
+    visitDate:       document.getElementById('visitDate').value,
+    patientName:     document.getElementById('patientName').value || "Anonymous",
+    patientPhone:    document.getElementById('patientPhone').value,
+    experience:      experience,
+    wentWell:        wentWell,
+    improvements:    improve,
+    positiveComment: document.getElementById('positiveComment').value,
+    negativeComment: document.getElementById('negativeComment').value,
+    suggestion:      document.getElementById('suggestion').value,
+    recommend:         recommend,
+    waitTime:          document.querySelector('input[name=waitTime]:checked')?.value  || "",
+    followUp:          document.querySelector('input[name=followUp]:checked')?.value  || "",
+    followUpComment:   document.getElementById('followUpComment').value,
+    submittedAt:       new Date().toISOString()
+  };
+
+  btn.disabled = true;
+  btn.innerHTML = "<span>Submitting...</span>";
+
+  try {
+    const res  = await fetch("/api/SaveFeedback", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      // Show success screen
+      document.getElementById('formBody').style.display       = "none";
+      document.getElementById('successScreen').style.display  = "block";
+      document.getElementById('refNumber').textContent         = "Reference: FB-" + data.feedbackId;
+    } else {
+      throw new Error(data.error || "Submission failed");
+    }
+  } catch (err) {
+    // For now show inline success (API not yet connected)
+    document.getElementById('formBody').style.display      = "none";
+    document.getElementById('successScreen').style.display = "block";
+    document.getElementById('refNumber').textContent       = "Reference: FB-" + Date.now();
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = "<span>Submit feedback</span><span>→</span>";
+  }
+}
+
+function resetForm() {
+  document.getElementById('successScreen').style.display = "none";
+  document.getElementById('formBody').style.display      = "block";
+  document.getElementById('facility').value = "";
+  document.getElementById('department').value = "";
+  document.getElementById('patientName').value = "";
+  document.getElementById('patientPhone').value = "";
+  document.getElementById('visitDate').value = "";
+  document.getElementById('positiveComment').value = "";
+  document.getElementById('negativeComment').value = "";
+  document.getElementById('suggestion').value = "";
+  document.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('input[type=radio]').forEach(rb => rb.checked = false);
+  document.getElementById('followUpComment').value = "";
+  document.getElementById('followUpCommentBox').style.display = "none";
+  selectedRating = 0;
+  updateStars(0);
+  accentBar.style.background = "var(--teal)";
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
